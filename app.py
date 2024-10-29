@@ -11,15 +11,18 @@ st.text('Hello, welcome to playground of ML Assignment-3!')
 embedding_choice = st.selectbox('Choose embedding size:', [64, 128])
 hidden_choice = st.selectbox('Choose hidden layer size:', [512, 1024])
 block_size_choice = st.selectbox('Choose context size (block size):', [12, 16])
+activation_choice = st.selectbox('Choose the activation function:', ['tanh','relu'])
 
 # Set the model parameters based on user choices
 vocab_size = 8690  
 embedding_dim = embedding_choice
 hidden_dim = hidden_choice  
 block_size = block_size_choice
+activation=activation_choice
 
 # Initialize the model
-model = NextWord(block_size, vocab_size, embedding_dim, hidden_dim)
+model = NextWord(block_size, vocab_size, embedding_dim, hidden_dim, activation)
+
 
 # Function to remove the "_orig_mod." prefix in the state dict keys
 def remove_prefix_from_state_dict(state_dict, prefix="_orig_mod."):
@@ -33,18 +36,26 @@ def remove_prefix_from_state_dict(state_dict, prefix="_orig_mod."):
 
 # Mapping combinations to file numbers
 file_map = {
-    (64, 512, 16): 1,
-    (64, 1024, 16): 2,
-    (128, 512, 16): 3,
-    (128, 1024, 16): 4,
-    (64, 512, 12): 5,
-    (64, 1024, 12): 6,
-    (128, 512, 12): 7,
-    (128, 1024, 12): 8
+    (64, 512, 16, 'relu'): 1,
+    (64, 1024, 16, 'relu'): 2,
+    (128, 512, 16, 'relu'): 3,
+    (128, 1024, 16, 'relu'): 4,
+    (64, 512, 12, 'relu'): 5,
+    (64, 1024, 12, 'relu'): 6,
+    (128, 512, 12, 'relu'): 7,
+    (128, 1024, 12, 'relu'): 8,
+    (128, 1024, 16, 'tanh'): 9,
+    (128, 1024, 12, 'tanh'): 10,
+    (128, 512, 16, 'tanh'): 11,
+    (128, 512, 12, 'tanh'): 12,
+    (64, 512, 16, 'tanh'): 13,
+    (64, 512, 12, 'tanh'): 14,
+    (64, 1024, 16, 'tanh'): 15,
+    (64, 1024, 12, 'tanh'): 16,
 }
 
 # Get the file number based on the user selection
-file_number = file_map.get((embedding_dim, hidden_dim, block_size))
+file_number = file_map.get((embedding_dim, hidden_dim, block_size, activation))
 
 # Construct the file names
 model_filename = f"model_sherlock_{file_number}.pth"
@@ -102,7 +113,7 @@ def generate_text(model, initial_text, stoi, itos, block_size, k=50):
     return generated_text
 
 # Input and output in Streamlit
-input_text = st.text_input("Enter input text (don't give very short prompts):")
+input_text = st.text_input("Enter input text (don't give very short prompts):", placeholder="Enter something")
 
 if input_text:
     output_text = generate_text(model, input_text, stoi, itos, block_size)
