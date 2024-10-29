@@ -112,9 +112,12 @@ def generate_text(model, initial_text, stoi, itos, block_size, k=50):
 
     return generated_text
 
-# Input and output in Streamlit
+
 input_text = st.text_input("Enter input text (don't give very short prompts):", placeholder="Enter something")
 
-if input_text:
+if input_text == "":
+    st.write("This is a Sherlock Holmes book trained model, please type some text input.")
+else:
     output_text = generate_text(model, input_text, stoi, itos, block_size)
     st.write(f"Predicted next word(s): {output_text}")
+
